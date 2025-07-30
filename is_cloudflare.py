@@ -1,3 +1,4 @@
+from datetime import time
 import pyautogui
 from selenium.webdriver.common.by import By
 
@@ -29,6 +30,7 @@ def is_cloudflare_waiting(driver):
         if cloudflare_detected:
             # Try to get checkbox position
             try:
+                time.sleep(5)  # Allow time for page to settle
                 checkbox = driver.find_element(By.XPATH, "//input[@type='checkbox']")
                 location = checkbox.location
                 size = checkbox.size
