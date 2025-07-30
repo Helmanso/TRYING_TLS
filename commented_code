@@ -1,0 +1,132 @@
+
+# def check_for_slot(driver):
+#     """
+#     Check for available slots in an infinite loop with random delays
+#     """
+#     print("🚀 Starting slot checker...")
+    
+#     while True:
+#         try:
+#             print(f"⏰ Checking for slots at {time.strftime('%H:%M:%S')}")
+            
+#             driver.get(APPOINTMENT_URL)
+#             time.sleep(random.uniform(2, 7))  # Random delay to mimic human behavior
+
+#             # If detected button[data-tls-value='confirm'], there no slot available
+#             try:
+#                 # first we check if Cloudflare is blocking us
+#                 if is_cloudflare_waiting(driver):
+#                     print("🌩️ Cloudflare verification detected. Moving mouse randomly...")
+#                     click_at_position(random.randint(100, 500), random.randint(100, 500))
+#                     continue
+
+#                 # confirm_button = WebDriverWait(driver, 10).until(
+#                 #     EC.presence_of_element_located((By.CSS_SELECTOR, "button[data-tls-value='confirm']"))
+#                 # )
+#                 # print("❌ No slots available at the moment.")
+                
+#                 # Random delay between 10-30 seconds before next check
+#                 delay = random.uniform(10, 30)
+#                 print(f"⏳ Waiting {delay:.1f} seconds before next check...")
+#                 time.sleep(delay)
+                
+#             except TimeoutException:
+#                 print("🎉 Slot is available! Taking screenshot...")
+#                 driver.save_screenshot("possible_slot.png")
+#                 print("🎯 SLOT FOUND! Stopping the checker.")
+#                 return True
+                
+#         except KeyboardInterrupt:
+#             print("\n🛑 Slot checker stopped by user (Ctrl+C)")
+#             return False
+#         except Exception as e:
+#             print(f"❌ Error during slot check: {e}")
+#             # Wait a bit longer on error to avoid rapid retries
+#             error_delay = random.uniform(30, 60)
+#             print(f"⏳ Waiting {error_delay:.1f} seconds before retrying...")
+#             time.sleep(error_delay)
+
+
+# def get_authenticated_session(driver):
+#     session = requests.Session()
+
+#     # Extract cookies from Selenium
+#     for cookie in driver.get_cookies():
+#         session.cookies.set(cookie['name'], cookie['value'], domain=cookie.get('domain'))
+
+#         # Look for XSRF-TOKEN
+#         if cookie['name'] == "XSRF-TOKEN":
+#             xsrf_token = cookie['value']
+    
+#     # Get the user-agent from the browser
+#     user_agent = driver.execute_script("return navigator.userAgent;")
+    
+#     # Set headers
+#     session.headers.update({
+#         "User-Agent": user_agent,
+#         "Referer": "https://fr.tlscontact.com/appointment/ma/maCAS2fr/21725397",
+#         "Accept": "application/json, text/plain, */*",
+#         "x-xsrf-token": xsrf_token,
+
+#         # Add these to bypass TLSContact's bot protection
+#         "Sec-Fetch-Dest": "empty",
+#         "Sec-Fetch-Mode": "cors",
+#         "Sec-Fetch-Site": "same-origin",
+#         "Sec-CH-UA": '"Not)A;Brand";v="8", "Chromium";v="138", "Google Chrome";v="138"',
+#         "Sec-CH-UA-Mobile": "?0",
+#         "Sec-CH-UA-Platform": '"macOS"',
+#         "Priority": "u=1, i"
+#     })
+
+#     return session
+
+
+
+# # alternative implementation using api
+# def check_for_slot(driver):
+#     """
+#     Check for available slots using the API endpoint
+#     """
+
+#     # we go to the appointment page to get the cookies
+#     driver.get(APPOINTMENT_URL)
+#     time.sleep(4)
+#     if is_cloudflare_waiting(driver):
+#         print("🌩️ Cloudflare verification detected. Moving mouse randomly...")
+#         click_at_position(random.randint(100, 500), random.randint(100, 500))
+#         time.sleep(10)
+  
+#     # GET ACCOUNT ROUTE
+#     GET_ACCOUNT_ROUTE = "https://fr.tlscontact.com/api/account"
+
+#     # CHECK AVAILABLE SLOTS
+#     CHECK_AVAILABLE_SLOTS_ROUTE = "https://fr.tlscontact.com/services/customerservice/api/tls/appointment/ma/maCAS2fr/table?client=fr&formGroupId=21725397&appointmentType=prime%20time&appointmentStage=appointment"
+
+#     session = get_authenticated_session(driver)
+    
+    
+
+#     while True:
+#         # Check account information
+#         response = session.get(GET_ACCOUNT_ROUTE)
+#         if response.status_code == 200:
+#             print("✅ Account information retrieved successfully.")
+#         else:
+#             print(f"❌ Failed to retrieve account information: {response.status_code}")
+#         time.sleep(random.uniform(2, 5))
+#         # Check available slots
+#         response = session.get(CHECK_AVAILABLE_SLOTS_ROUTE)
+#         if response.status_code == 200:
+#             available_slots = response.json().get("available_slots", [])
+#             if available_slots:
+#                 print("🎉 Available slots found:")
+#                 for slot in available_slots:
+#                     print(f" - {slot}")
+#             else:
+#                 print("❌ No available slots found.")
+#         else:
+#             print(f"❌ Failed to check available slots: {response.status_code}")
+
+#         # Wait before the next check
+#         time.sleep(random.uniform(10, 30))
+
