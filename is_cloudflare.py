@@ -36,6 +36,10 @@ def is_cloudflare_waiting(driver):
                 location = verification_text.location
                 size = verification_text.size
                 print(f"🌩️ Cloudflare detected with verification text at position {location} and size {size}")
+                return {
+                    'detected': True,
+                    'position': (location['x'] + size['width'] / 2, location['y'] + size['height'] / 2)
+                }
                 
             except Exception as e:
                 print(f"⚠️ Cloudflare detected but checkbox not found: {e}")
