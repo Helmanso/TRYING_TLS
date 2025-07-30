@@ -82,7 +82,7 @@ def handle_cloudflare_if_detected(driver):
         else:
             print("⚠️ Cloudflare detected but no checkbox found. Using fallback position.")
             # Use the hardcoded fallback position
-            click_at_position(436.58984375, 407.0078125)
+            click_at_position(396, 407)
             time.sleep(5)
             return True
 
