@@ -33,6 +33,7 @@ def is_cloudflare_waiting(driver):
             try:
                 # we cant get the checkbox position directly, so we get the psoition of verification text
                 verification_text = driver.find_element(By.XPATH, "//p[contains(text(), 'verify you are human')]")
+                print(f"🌩️ Cloudflare detected with verification text: {verification_text.text}")
                 location = verification_text.location
                 size = verification_text.size
                 print(f"🌩️ Cloudflare detected with verification text at position {location} and size {size}")
