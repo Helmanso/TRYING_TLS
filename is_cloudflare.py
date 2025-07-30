@@ -29,8 +29,8 @@ def is_cloudflare_waiting(driver):
         
         if cloudflare_detected:
             # Try to get checkbox position
+            time.sleep(5)  # Allow time for page to settle
             try:
-                time.sleep(5)  # Allow time for page to settle
                 checkbox = driver.find_element(By.XPATH, "//input[@type='checkbox']")
                 location = checkbox.location
                 size = checkbox.size
@@ -51,13 +51,7 @@ def is_cloudflare_waiting(driver):
                 'detected': False,
                 'position': None
             }
-            
-    except Exception as e:
-        print(f"❌ Error checking for Cloudflare: {e}")
-        return {
-            'detected': False,
-            'position': None
-        }
+        
 
 def handle_cloudflare_if_detected(driver):
     """
