@@ -31,15 +31,12 @@ def is_cloudflare_waiting(driver):
             # Try to get checkbox position
             time.sleep(10)  # Allow time for page to settle
             try:
-                checkbox = driver.find_element(By.XPATH, "//input[@type='checkbox']")
-                location = checkbox.location
-                size = checkbox.size
-                x = location['x'] + size['width'] / 2
-                y = location['y'] + size['height'] / 2
-                return {
-                    'detected': True,
-                    'position': (x, y)
-                }
+                # we cant get the checkbox position directly, so we get the psoition of verification text
+                verification_text = driver.find_element(By.XPATH, "//p[contains(text(), 'verify you are human')]")
+                location = verification_text.location
+                size = verification_text.size
+                print(f"🌩️ Cloudflare detected with verification text at position {location} and size {size}")
+                
             except Exception as e:
                 print(f"⚠️ Cloudflare detected but checkbox not found: {e}")
                 return {
