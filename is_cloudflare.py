@@ -51,6 +51,12 @@ def is_cloudflare_waiting(driver):
                 'detected': False,
                 'position': None
             }
+    except Exception as e:
+        print(f"❌ Error checking for Cloudflare: {e}")
+        return {
+            'detected': False,
+            'position': None
+        }
         
 
 def handle_cloudflare_if_detected(driver):
