@@ -64,10 +64,7 @@ def perform_login(driver, email, password, timeout=15):
                 EC.presence_of_element_located((By.ID, "password"))
             )
 
-            if not email_input or not password_input:
-                print("❌ Login form elements not found.")
-                return False
-
+            print(email_input, password_input)
             email_input.clear()
             email_input.send_keys(email)
 
