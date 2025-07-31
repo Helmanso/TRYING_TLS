@@ -64,9 +64,10 @@ def perform_login(driver, email, password, timeout=15):
                 EC.presence_of_element_located((By.ID, "password"))
             )
 
-            print(email_input, password_input)
             email_input.clear()
+            time.sleep(4)  # Optional: slight delay to ensure input is ready
             email_input.send_keys(email)
+            time.sleep(4)  # Optional: slight delay to ensure input is ready
 
             password_input.clear()
             password_input.send_keys(password)
