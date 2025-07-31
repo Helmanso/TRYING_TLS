@@ -57,12 +57,21 @@ def perform_login(driver, email, password, timeout=15):
         )
 
         try:
-            email_input = driver.find_element(By.ID, "username")
-            password_input = driver.find_element(By.ID, "password")
-            print("🔑 Filling in login credentials...")
+            email_input = WebDriverWait(driver, timeout).until(
+                EC.presence_of_element_located((By.ID, "username"))
+            )
+            password_input = WebDriverWait(driver, timeout).until(
+                EC.presence_of_element_located((By.ID, "password"))
+            )
 
+            if not email_input or not password_input:
+                print("❌ Login form elements not found.")
+                return False
+
+            email_input.clear()
             email_input.send_keys(email)
 
+            password_input.clear()
             password_input.send_keys(password)
             password_input.send_keys(Keys.RETURN)
 
