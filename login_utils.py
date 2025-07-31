@@ -59,6 +59,7 @@ def perform_login(driver, email, password, timeout=15):
         try:
             email_input = driver.find_element(By.ID, "username")
             password_input = driver.find_element(By.ID, "password")
+            print("🔑 Filling in login credentials...")
 
             email_input.clear()
             email_input.send_keys(email)
