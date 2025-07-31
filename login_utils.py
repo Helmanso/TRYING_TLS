@@ -50,6 +50,7 @@ def perform_login(driver, email, password, timeout=15):
             print("❌ 'Se connecter' button not found or not clickable.")
             return False
 
+        print("⏳ Waiting for login form to appear...")
         # Wait for login form
         try:
             email_input = WebDriverWait(driver, timeout).until(
