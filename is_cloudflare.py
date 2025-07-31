@@ -2,7 +2,7 @@ import time
 import pyautogui
 from selenium.webdriver.common.by import By
 
-def is_cloudflare_waiting(driver):
+def handle_cloudflare_if_detected(driver):
     """
     Detects if Cloudflare verification is present and returns checkbox position if found
     
@@ -12,81 +12,39 @@ def is_cloudflare_waiting(driver):
             'position': tuple or None  # (x, y) coordinates of checkbox if found
         }
     """
-    try:
+    text = driver.execute_script("return document.body.innerText").lower()
+    bg_color = driver.execute_script("return window.getComputedStyle(document.body, null).getPropertyValue('background-color');")
+
+    cloudflare_detected = (
+        "verify you are human" in text or
+        "needs to review the security" in text or
+        "cloudflare" in text or
+        "checking your browser" in text or
+        "please wait while we check" in text or
+        "rgb(0" in bg_color or
+        "rgb(17" in bg_color or
+        "#000" in bg_color
+    )
+
+    if cloudflare_detected:
+        print("⚠️ Cloudflare verification detected. Attempting to handle...")
+        # Wait for the checkbox to appear
+        time.sleep(7)
+        # Check only if we are still on the Cloudflare page or the website redirected without checkbox
         text = driver.execute_script("return document.body.innerText").lower()
-        bg_color = driver.execute_script("return window.getComputedStyle(document.body, null).getPropertyValue('background-color');")
-
-        cloudflare_detected = (
-            "verify you are human" in text or
-            "needs to review the security" in text or
-            "cloudflare" in text or
-            "checking your browser" in text or
-            "please wait while we check" in text or
-            "rgb(0" in bg_color or
-            "rgb(17" in bg_color or
-            "#000" in bg_color
-        )
-        
-        if cloudflare_detected:
-            # Try to get checkbox position
-            time.sleep(10)  # Allow time for page to settle
-            try:
-                # we cant get the checkbox position directly, so we get the psoition of verification text
-                verification_text = driver.find_element(By.XPATH, "//p[contains(text(), 'verify you are human')]")
-                print(f"🌩️ Cloudflare detected with verification text: {verification_text.text}")
-                location = verification_text.location
-                size = verification_text.size
-                print(f"🌩️ Cloudflare detected with verification text at position {location} and size {size}")
-                return {
-                    'detected': True,
-                    'position': (location['x'] + size['width'] / 2, location['y'] + size['height'] / 2)
-                }
-                
-            except Exception as e:
-                print(f"⚠️ Cloudflare detected but checkbox not found: {e}")
-                return {
-                    'detected': True,
-                    'position': None
-                }
-        else:
-            return {
-                'detected': False,
-                'position': None
-            }
-    except Exception as e:
-        print(f"❌ Error checking for Cloudflare: {e}")
-        return {
-            'detected': False,
-            'position': None
-        }
-        
-
-def handle_cloudflare_if_detected(driver):
-    """
-    Helper function to detect and handle Cloudflare verification
-    
-    Returns:
-        bool: True if Cloudflare was detected and handled, False otherwise
-    """
-    result = is_cloudflare_waiting(driver)
-    
-    if result['detected']:
-        print("🌩️ Cloudflare verification detected.")
-        
-        if result['position']:
-            x, y = result['position']
-            print(f"📍 Found checkbox at position ({x}, {y})")
-            click_at_position(x, y)
-            time.sleep(5)
-            return True
-        else:
-            print("⚠️ Cloudflare detected but no checkbox found. Using fallback position.")
-            # Use the hardcoded fallback position
+        if "verify you are human" in text or "cloudflare" in text:
+            # Click on the checkbox position
             click_at_position(241, 404)
-            time.sleep(5)
+            # sleep to allow Cloudflare to process the click
+            time.sleep(4)
             return True
+        else:
+            print("⚠️ Cloudflare verification not detected after waiting.")
+            return False
+    else:
+        print("⚠️ Cloudflare not detected or no checkbox found.")
+        return False
 
-    return False
 
 def click_at_position(x, y):
     """

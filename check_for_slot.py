@@ -3,8 +3,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 import time, random
-from is_cloudflare import handle_cloudflare_if_detected, is_cloudflare_waiting, click_at_position
-from login_utils import perform_login_and_navigate_to_appointment
+from is_cloudflare import handle_cloudflare_if_detected
+from login_utils import perform_login
 import requests
 
 APPOINTMENT_URL = "https://fr.tlscontact.com/appointment/ma/maCAS2fr/21725397"
@@ -56,9 +56,13 @@ def check_for_slot(driver, email=None, password=None):
         password: Login password (required for session recovery)
     """
     driver.get(APPOINTMENT_URL)
-    time.sleep(4)
-
+   
     handle_cloudflare_if_detected(driver)
+
+    WebDriverWait(driver, 10).until(
+        lambda d: d.execute_script("return document.readyState") == "complete"
+    )
+
     
     while True:
         try:
@@ -72,23 +76,33 @@ def check_for_slot(driver, email=None, password=None):
                     print("🔑 Session expired (401). Attempting to re-login...")
                     if email and password:
                         # Use shared login function for session recovery
-                        login_success = perform_login_and_navigate_to_appointment(
-                            driver, email, password, APPOINTMENT_URL
+                        login_success = perform_login(
+                            driver, email, password
                         )
                         
                         if login_success:
+                            WebDriverWait(driver, 10).until(
+                                lambda d: d.execute_script("return document.readyState") == "complete"
+                            )
+                            # Navigate back to the appointment page
+                            driver.get(APPOINTMENT_URL)
+                            handle_cloudflare_if_detected(driver)
+                            WebDriverWait(driver, 10).until(
+                                lambda d: d.execute_script("return document.readyState") == "complete"
+                            )
+                            # Re-check for slots
                             print("🔄 Session recovered successfully!")
                             continue  # Skip this iteration and try again
-                        else:
-                            print("❌ Failed to recover session. Please check credentials.")
-                            # Wait longer before retrying
-                            time.sleep(random.uniform(60, 120))
-                            continue
+                      
                 elif "status" in slot_data and slot_data["status"] == 403:
                     # Reload the page if forbidden
                     print("🚫 Forbidden (403). Reloading page...")
                     driver.refresh()
-                    time.sleep(5)
+                    handle_cloudflare_if_detected(driver)
+                    WebDriverWait(driver, 10).until(
+                        lambda d: d.execute_script("return document.readyState") == "complete"
+                    )
+                    continue  # Retry fetching slots after refresh
                 else:
                     print(f"❌ Error fetching slots: {slot_data['error']}")
             elif not slot_data:
@@ -102,10 +116,11 @@ def check_for_slot(driver, email=None, password=None):
                             available_slots.append((date, time_str))
 
                 if available_slots:
-                    print("🎯 Slot(s) found:")
                     for date, time_str in available_slots:
                         print(f" - {date} at {time_str}")
                     
+                    # Check cloudflare again before booking
+                    handle_cloudflare_if_detected(driver)
                     # Book the first available slot
                     success = handle_slot_booking(driver, available_slots[0])
                     if success:
