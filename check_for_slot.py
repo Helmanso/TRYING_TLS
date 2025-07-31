@@ -7,7 +7,7 @@ from is_cloudflare import handle_cloudflare_if_detected
 from login_utils import perform_login
 import requests
 
-APPOINTMENT_URL = "https://fr.tlscontact.com/appointment/ma/maCAS2fr/21725397"
+APPOINTMENT_URL = "https://fr.tlscontact.com/appointment/ma/maCAS2fr/21751177"
 
 def fetch_account_in_browser(driver):
     js_code = """
@@ -24,7 +24,7 @@ def fetch_account_in_browser(driver):
 
 def fetch_slots_in_browser(driver):
     js_code = """
-    return fetch("https://fr.tlscontact.com/services/customerservice/api/tls/appointment/ma/maCAS2fr/table?client=fr&formGroupId=21725397&appointmentType=prime%20time&appointmentStage=appointment", {
+    return fetch("https://fr.tlscontact.com/services/customerservice/api/tls/appointment/ma/maCAS2fr/table?client=fr&formGroupId=21751177&appointmentType=normal&appointmentStage=appointment", {
         method: "GET",
         headers: {
             "Accept": "application/json, text/plain, */*"
@@ -170,7 +170,7 @@ def handle_slot_booking(driver, slot):
 
 def book_slot_in_browser(driver, date, time_str):
     js_code = f"""
-    return fetch("https://fr.tlscontact.com/services/customerservice/api/tls/appointment/book?client=fr&issuer=maCAS2fr&formGroupId=21725397&timeslot={date}%20{time_str}&appointmentType=prime%20time&accountType=INDI&lang=fr-fr", {{
+    return fetch("https://fr.tlscontact.com/services/customerservice/api/tls/appointment/book?client=fr&issuer=maCAS2fr&formGroupId=21751177&timeslot={date}%20{time_str}&appointmentType=normal%20time&accountType=INDI&lang=fr-fr", {{
         method: "POST",
         headers: {{
             "Accept": "application/json, text/plain, */*",
