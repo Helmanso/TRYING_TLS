@@ -29,7 +29,7 @@ def handle_cloudflare_if_detected(driver):
     if cloudflare_detected:
         print("⚠️ Cloudflare verification detected. Attempting to handle...")
         # Wait for the checkbox to appear
-        time.sleep(7)
+        time.sleep(10)
         # Check only if we are still on the Cloudflare page or the website redirected without checkbox
         text = driver.execute_script("return document.body.innerText").lower()
         if "verify you are human" in text or "cloudflare" in text:
