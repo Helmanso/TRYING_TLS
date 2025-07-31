@@ -34,7 +34,7 @@ def fetch_slots_in_browser(driver):
         if (res.status === 401) {
             return { error: "Session expired (401)", status: 401 };
         }
-        if (res.status === 403) {
+        if (res.status === 403 || res.status === 429) {
             return { error: "Forbidden (403)", status: 403 };
         }
         if (!res.ok) {
