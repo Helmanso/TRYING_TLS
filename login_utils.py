@@ -49,13 +49,15 @@ def perform_login(driver, email, password, timeout=15):
         except TimeoutException:
             print("❌ 'Se connecter' button not found or not clickable.")
             return False
+        
 
-        print("⏳ Waiting for login form to appear...")
         # Wait for login form
+        WebDriverWait(driver, timeout).until(
+            lambda d: d.execute_script("return document.readyState") == "complete"
+        )
+
         try:
-            email_input = WebDriverWait(driver, timeout).until(
-                EC.presence_of_element_located((By.ID, "username"))
-            )
+            email_input = driver.find_element(By.ID, "email")
             password_input = driver.find_element(By.ID, "password")
 
             email_input.clear()
