@@ -102,6 +102,7 @@ def check_for_slot(driver, email=None, password=None):
                     WebDriverWait(driver, 10).until(
                         lambda d: d.execute_script("return document.readyState") == "complete"
                     )
+                    time.sleep(5)  # Wait a bit before retrying
                     continue  # Retry fetching slots after refresh
                 else:
                     print(f"❌ Error fetching slots: {slot_data['error']}")
