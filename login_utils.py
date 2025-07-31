@@ -66,9 +66,11 @@ def perform_login(driver, email, password, timeout=15):
 
             email_input.clear()
             time.sleep(4)  # Optional: slight delay to ensure input is ready
+            print("🔑 Filling in email...")
             email_input.send_keys(email)
+            print("🔑 Filling in password...")
             time.sleep(4)  # Optional: slight delay to ensure input is ready
-
+            print("🔑 Submitting login form...")
             password_input.clear()
             password_input.send_keys(password)
             password_input.send_keys(Keys.RETURN)
